@@ -1,49 +1,52 @@
-#!/usr/bin/env bash
-# is a factors challenge
+#!/usr/bin/python3
 
-check_factor()
-{
-	if [ $# -ne 3 ];
-        then
-                args=("$@")
-                count=0
-                num2=1
-                for a in ${args[*]};
-                do
-                        if [ $count -gt 1 ];
-                        then
-                                num2=$(echo $a*$num2 | bc)
-                        fi
-                        count=$((count + 1))
-                done
-        else
-                num2=$3
-        fi
+# import time
+# start_time = time.time()
 
-        num1=$2
-        num=$(echo "$1" | tr ':' '=')
+import sys
 
-        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
-	        if ((result == 1)); then
-		        numcp=$num1
-		        num1=$num2
-		        num2=$numcp
-                fi
+prime_base = [2, 3, 5, 6, 7, 11, 13, 17, 19]
 
-        echo "$num$num1*$num2"
-}
 
-if [ $# -ne 1 ]
-then
-        echo 'Usage: factors <file>'
-        exit 1
-else
+def text2num(text):
+    if ',' not in text and '.' not in text:
+        return int(text)
+        # return int(text)
+    elif ',' not in text and '.' in text:
+        return float(text)
+    elif ',' in text and '.' not in text:
+        number = int(''.join(text.split(',')))
+        return number
+    elif ',' in text and '.' in text:
+        number = float(''.join(text.split(',')))
+        return number
 
-        while read i
-        do
 
-                result=$(factor "$i")
-                check_factor $result
+def sqrt(num):
+    return num ** .5
 
-        done < "$1"
-fi
+
+def prime_factor2(num):
+    sqrt_base = int(sqrt(num)) + 1
+    j = int(sqrt(num)) + 1
+    while num % j != 0:
+        j -= 1
+    return j
+
+
+def prime_factor1(num):
+    for i in prime_base:
+        if num % i == 0:
+            print(f"{num}={int(num / i)}*{i}")
+            return
+    j = prime_factor2(num)
+    print(f"{num}={int(num / j)}*{j}")
+
+
+if len(sys.argv) > 1:
+    with open(sys.argv[1], 'r') as f:
+        lines = f.readlines()
+numbers = list(map(text2num, lines))
+factorized = list(map(prime_factor1, numbers))
+
+# print(f"{time.time() - start_time}")
